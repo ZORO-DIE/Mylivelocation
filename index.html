@@ -1,25 +1,243 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Warning!</title>
-  <style>
-    body {
-      background: black;
-      color: red;
-      text-align: center;
-      font-family: Arial;
-      padding-top: 100px;
-    }
-  </style>
-</head>
-<body>
-  <h1>⚠️ Your Phone is Hacked!</h1>
-  <p>Scanning your device...</p>
+<meta charset="UTF-8">
+<title>ANDROID RECOVERY MODE</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <script>
-    setTimeout(() => {
-      alert("😂 PRANK! Chill bro.");
-    }, 3000);
-  </script>
+<style>
+body {
+  margin: 0;
+  background: black;
+  color: #00ff00;
+  font-family: Consolas, monospace;
+  overflow: hidden;
+  animation: shake 0.08s infinite;
+}
+
+@keyframes shake {
+  0% {transform: translate(0,0);}
+  25% {transform: translate(2px,-2px);}
+  50% {transform: translate(-2px,2px);}
+  75% {transform: translate(2px,2px);}
+  100% {transform: translate(0,0);}
+}
+
+canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+}
+
+.panel {
+  position: relative;
+  z-index: 1;
+  max-width: 480px;
+  margin: auto;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 2px solid red;
+  box-shadow: 0 0 80px red;
+  padding: 18px;
+  background: rgba(0,0,0,0.9);
+  color: red;
+}
+
+h1 {
+  text-align: center;
+  animation: blink 0.6s infinite;
+}
+
+@keyframes blink {
+  50% {opacity: 0;}
+}
+
+.log {
+  min-height: 100px;
+  font-size: 14px;
+}
+
+.bar {
+  height: 10px;
+  background: red;
+  width: 100%;
+  margin: 8px 0;
+}
+
+.fake-scan {
+  border: 1px dashed red;
+  height: 120px;
+  line-height: 120px;
+  text-align: center;
+  animation: blink 1s infinite;
+  margin: 10px 0;
+}
+
+.hidden { display: none; }
+</style>
+</head>
+
+<body onclick="goFull()">
+
+<canvas id="matrix"></canvas>
+
+<!-- MAIN ATTACK SCREEN -->
+<div class="panel" id="attack">
+  <h1>⚠ SYSTEM FAILURE ⚠</h1>
+
+  <div class="log" id="log">Injecting kernel exploit…</div>
+
+  <div class="fake-scan">BIOMETRIC SCAN ACTIVE</div>
+
+  <div class="bar"></div>
+
+  <p style="font-size:12px;">
+    Battery: <span id="battery">100%</span><br>
+    Temperature: <span id="temp">37°C</span><br>
+    GPS: LOCKED<br>
+    WhatsApp: MIRRORING<br>
+    Gallery: EXPORTING
+  </p>
+</div>
+
+<!-- SYSTEM UPDATE -->
+<div class="panel hidden" id="update">
+  <h1>ANDROID SYSTEM UPDATE</h1>
+  <p>Installing system update…</p>
+
+  <div class="bar"></div>
+
+  <p style="font-size:14px;">
+    Progress: <span id="updatePercent">1%</span><br><br>
+    Do not turn off your device.
+  </p>
+</div>
+
+<!-- RECOVERY SCREEN -->
+<div class="panel hidden" id="recovery">
+  <h1>ANDROID RECOVERY</h1>
+  <p>
+    reboot system now<br>
+    apply update from ADB<br>
+    wipe data/factory reset<br>
+    power off
+  </p>
+</div>
+
+<!-- FINAL REVEAL -->
+<div class="panel hidden" id="final">
+  <h1>😄 GOT YOU</h1>
+  <p>This was ONLY a prank webpage.</p>
+  <p>No hacking. No access. No tracking.</p>
+  <p style="font-size:12px;color:#aaa;">
+    Close the tab — your device is perfectly safe.
+  </p>
+</div>
+
+<audio id="alarm" loop>
+  <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg">
+</audio>
+
+<script>
+/* Fullscreen */
+function goFull() {
+  document.documentElement.requestFullscreen().catch(()=>{});
+}
+
+/* Alarm + vibration */
+const alarm = document.getElementById("alarm");
+alarm.play().catch(()=>{});
+if (navigator.vibrate) {
+  navigator.vibrate([600,300,600,300,1000]);
+}
+
+/* Logs */
+const logs = [
+  "Kernel privilege escalated…",
+  "Secure boot bypassed…",
+  "Fingerprint hash matched…",
+  "Face ID verified…",
+  "Decrypting user vault…",
+  "Overheating detected…",
+  "Battery drain accelerating…",
+  "System instability critical…"
+];
+
+let i = 0;
+const logEl = document.getElementById("log");
+const logInt = setInterval(() => {
+  logEl.textContent = logs[i % logs.length];
+  i++;
+}, 2500);
+
+/* Fake battery + temperature */
+let battery = 100;
+let temp = 37;
+const batEl = document.getElementById("battery");
+const tempEl = document.getElementById("temp");
+
+const stats = setInterval(() => {
+  battery -= 3;
+  temp += 2;
+  batEl.textContent = battery + "%";
+  tempEl.textContent = temp + "°C";
+}, 1200);
+
+/* Switch to system update */
+setTimeout(() => {
+  document.getElementById("recovery").classList.add("hidden");
+  document.getElementById("update").classList.remove("hidden");
+}, 38000);
+
+/* Fake update progress */
+let up = 1;
+const upEl = document.getElementById("updatePercent");
+
+const updater = setInterval(() => {
+  up++;
+  upEl.textContent = up + "%";
+  if (up >= 99) clearInterval(updater);
+}, 120);
+
+/* Final reveal */
+setTimeout(() => {
+  document.getElementById("update").classList.add("hidden");
+  document.getElementById("final").classList.remove("hidden");
+}, 52000);
+
+/* Final reveal */
+setTimeout(() => {
+  document.getElementById("recovery").classList.add("hidden");
+  document.getElementById("final").classList.remove("hidden");
+  clearInterval(logInt);
+  clearInterval(stats);
+}, 38000);
+
+/* Matrix rain */
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+
+const chars = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%";
+const fontSize = 14;
+const cols = canvas.width / fontSize;
+const drops = Array.from({length: cols}).fill(1);
+
+function draw() {
+  ctx.fillStyle = "rgba(0,0,0,0.05)";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.fillStyle = "#00ff00";
+  ctx.font = fontSize + "px monospace";
+  for (let i = 0; i < drops.length; i++) {
+    const t = chars[Math.floor(Math.random()*chars.length)];
+    ctx.fillText(t, i*fontSize, drops[i]*fontSize);
+    if (drops[i]*fontSize > canvas.height && Math.random() > 0.95) drops[i]=0;
+    drops[i]++;
+  }
+}
+setInterval(draw, 33);
+</script>
+
 </body>
 </html>
